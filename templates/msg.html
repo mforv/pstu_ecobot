@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bot Messages</title>
+
+    <!-- CSS -->
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <script type="text/javascript" src='/static/map.js' charset="utf-8"></script>
+
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="nav-element"><a href="/"><img src="/static/img/icon_msg.png"  class="nav-icon active"></a></div>
+        <div class="nav-element"><a href="/cam"><img src="/static/img/icon_cam.png" class="nav-icon"></a></div>
+        <div class="nav-element"><a href="/auto"><img src="/static/img/icon_auto.png" class="nav-icon"></a></div>
+        <!-- <div class="nav-element"><a href="/man"><img src="/static/img/icon_man.png" class="nav-icon"></a></div> -->
+        <div class="nav-element"><a href="/map"><img src="/static/img/icon_map.png" class="nav-icon"></a></div>
+        <div class="nav-element"><a href="/prefs"><img src="/static/img/icon_prefs.png" class="nav-icon"></a></div>
+    </div>
+    <div class="container">
+
+        <form id='msg-form' action="/send_msg" method="POST" class="msg-view">
+        <div class='msg-log'>
+            {% for message in messages %}
+            <p>{{message}}</p>
+            {% endfor %}
+        </div>
+        <div class="msg-input">
+            <input type="text" placeholder="Введите команду"  name="command">
+            <button style="margin-top: 5px;" type="submit">Отправить</button>
+        </div>
+        </form>
+    </div>
+    <script>setMapHeight();</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bot Camera</title>
+
+    <!-- CSS -->
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <script type="text/javascript" src='/static/map.js' charset="utf-8"></script>
+
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="nav-element"><a href="/msg"><img src="/static/img/icon_msg.png"  class="nav-icon"></a></div>
+        <div class="nav-element"><a href="/"><img src="/static/img/icon_cam.png" class="nav-icon active"></a></div>
+        <div class="nav-element"><a href="/auto"><img src="/static/img/icon_auto.png" class="nav-icon"></a></div>
+        <!-- <div class="nav-element"><a href="/man"><img src="/static/img/icon_man.png" class="nav-icon"></a></div> -->
+        <div class="nav-element"><a href="/map"><img src="/static/img/icon_map.png" class="nav-icon"></a></div>
+        <div class="nav-element"><a href="/prefs"><img src="/static/img/icon_prefs.png" class="nav-icon"></a></div>
+    </div>
+    <div class="cam-view"></div>
+    <div class="cam-controls">
+        <div style="position:absolute; top: 30%; left: 2%; text-align: left;">
+            <button id="cam-left" onclick="moveCam(2)">Влево</button>
+        </div>
+        <div style="position:absolute; top: 15%; width: 100%; text-align: center;">
+            <button id="cam-up" onclick="moveCam(0)">Вверх</button>
+        </div>
+        <div style="position:absolute; top: 30%; right: 2%; text-align: right;">
+            <button id="cam-right" onclick="moveCam(3)">Вправо</button>
+        </div>
+        <div style="position:absolute; bottom: 2%; width: 100%; text-align: center;">
+            <button id="cam-down" onclick="moveCam(1)">Вниз</button>
+        </div>
+    </div>
+    <div class="container"></div>
+    <script>
+        setMapHeight();
+
+        function moveCam(direction)
+        {
+            let mcdir = 'mcdir='+direction;
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() { 
+                if (xmlHttp.readyState == 4)
+                    {
+                        let response = xmlHttp.responseText;
+                        console.log(response)
+                    }
+            }
+            xmlHttp.open("POST", "/movecam", true); // true for asynchronous 
+            xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xmlHttp.send(mcdir);
+        }
+    </script>
+</body>
+</html>
