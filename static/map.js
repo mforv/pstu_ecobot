@@ -1,24 +1,7 @@
-// var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
-var today  = new Date();
-
-Number.prototype.pad = function(size) {
-    var s = String(this);
-    while (s.length < (size || 2)) {s = "0" + s;}
-    return s;
-  }
-
 function toggleRouteOn()
 {
-    var nav = document.getElementById('route-container')
-    if (nav.style.display == "block")
-    {
-        nav.style.display = "none";
-    }
-    else
-    {
-        nav.style.display = 'block';
-    }
+    let nav = document.getElementById('route-container');
+    nav.style.display = nav.style.display == 'block' ? 'none' : 'block';
 }
 
 function setMapHeight()
@@ -27,7 +10,7 @@ function setMapHeight()
     // basicH = 1476;
     basicW = 1770;
     basicH = 1110;
-    var container = document.getElementsByClassName("container")[0];
+    let container = document.getElementsByClassName("container")[0];
     // container.style.width = (basicW / basicH) * container.clientHeight + "px";
     container.style.height = (basicH / basicW) * container.clientWidth + "px";
 }
@@ -38,7 +21,7 @@ function setMapHeight()
 
 function showName(event, name)
 {
-    var tooltip = document.getElementsByClassName("object-title")[0];
+    let tooltip = document.getElementsByClassName("object-title")[0];
     tooltip.style.display = 'block';
     tooltip.style.left = event.clientX+"px";
     tooltip.style.top = (event.clientY - 30)+"px";
@@ -48,7 +31,7 @@ function showName(event, name)
 
 function hideName()
 {
-    var obj = document.getElementsByClassName("object-title")[0];
+    let obj = document.getElementsByClassName("object-title")[0];
     if (obj.style.display == "block")
     {
         obj.style.display = "none";
@@ -57,9 +40,9 @@ function hideName()
 
 function setBotMarker(basicW, bot_x, bot_y)
 {
-    var container = document.getElementsByClassName("container")[0];
-    var scale = container.clientWidth / basicW;
-    var bot = document.getElementById("bot");
+    let container = document.getElementsByClassName("container")[0];
+    let scale = container.clientWidth / basicW;
+    let bot = document.getElementById("bot");
     bot.style.left = bot_x*scale+"px";
     bot.style.top = bot_y*scale+"px";
     // bot.style.width = 30 * scale + "px";
@@ -71,25 +54,23 @@ function setMapImage(mapfile)
     if (mapfile)
     {
         console.log(1);
-        var container = document.getElementsByClassName("container")[0];
+        let container = document.getElementsByClassName("container")[0];
         container.style.backgroundImage = 'url("'+mapfile+'")';
     }
-
 }
 
 function loadData(basicW, basicH, data)
   {
     // document.addEventListener("click", printMousePos);
-    var layer = document.getElementsByClassName("object-layer")[0];
+    let layer = document.getElementsByClassName("object-layer")[0];
     // container.style.width = (basicW / basicH) * container.clientHeight + "px";
     layer.style.height = (basicH / basicW) * layer.clientWidth + "px";
-    var scale = layer.clientWidth / basicW;
+    let scale = layer.clientWidth / basicW;
     // var scaleH =  layer.clientHeight / basicH;
     // console.log(layer.clientWidth, layer.clientHeight);
     // console.log(scale, scaleH);
-    Array.forEach(data, function(element) {
-
-        var el = document.createElement('div');
+    data.forEach(element => {
+        let el = document.createElement('div');
         // console.log(element);
         el.style.position = 'absolute';
         el.style.left = element.loc[0]*scale + "px";
@@ -106,51 +87,15 @@ function loadData(basicW, basicH, data)
     });
 }
 
-function getPath()
+async function getPath()
 {
-    let objectName = document.getElementById('route-to').value;    
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4)
-            {
-                let points = JSON.parse(xmlHttp.responseText);
-                drawPath(points);
-            }
-    }
-    xmlHttp.open("GET", '/setroute?name='+objectName+'', true); // true for asynchronous 
-    xmlHttp.send();
+    let objectName = document.getElementById('route-to').value;
+    // fetch('/setroute?name='+objectName+'', { method: 'GET', cache: 'no-cache'}).then(response => response.json()).then(data => { drawPath(data); })
+    // Ниже — более читаемый вариант строки выше
+    const response = await fetch('/setroute?name='+objectName+'', { method: 'GET', cache: 'no-cache'});
+    const data = await response.json();
+    drawPath(data);
 }
-
-// function getPathPromise(objectName)
-// {
-//     return new Promise(function(resolve, reject)
-//     {
-//         var xhr = new XMLHttpRequest();
-//         xhr.open('GET', '/setroute?name='+objectName+'', true);
-
-//         xhr.onload = function()
-//         {
-//             if (this.status == 200)
-//             {
-//                 console.log(this.responseText);
-//                 resolve(this.responseText);
-//             }
-//             else
-//             {
-//                 var error = new Error(this.statusText);
-//                 error.code = this.status;
-//                 reject(error);
-//             }
-//         };
-
-//         xhr.onerror = function()
-//         {
-//             reject(new Error("Network Error"));
-//         };
-
-//         xhr.send();
-//     });
-// }
 
 function drawPath(points)
 {

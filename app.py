@@ -1,15 +1,15 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 
-import flask
 import datetime
-import self_check
+import flask
 # from msg import parser
 # from cv import command_wrapper
 import fractal_path_finder as fpf
-from cv import roto
+# from cv import roto
+import hw_wrapper as hw
 
-app = flask.Flask(__name__)
+app = flask.Flask('Ecobot')
 messages = []
 # objects = [
 #     {'name': "Ель", 'loc': [31, 613], 'size': [276, 427]}, 
@@ -41,25 +41,25 @@ def index():
     return flask.render_template("start.html")
 
 @app.route('/msg')
-def msg():
+def show_msg():
     # send_message('Bot', 'Привет!')
     return flask.render_template("msg.html", messages=messages)
 
 @app.route('/cam')
-def cam():
+def show_cam():
     return flask.render_template("cam.html")
 
 @app.route('/map')
-def map():
+def show_map():
     return flask.render_template("map.html", map_objects=objects)
 
 @app.route('/auto')
-def auto():
+def show_auto():
     # return flask.render_template("auto.html")
     return flask.redirect('/')
 
 @app.route('/prefs')
-def prefs():
+def show_prefs():
     # return flask.render_template("prefs.html")
     return flask.redirect('/')
 
@@ -136,9 +136,32 @@ def move_cam():
         resp = 3
     return 'Moved in ' + str(resp)
 
+@app.route('/controls')
+def show_controls():
+    return flask.render_template('controls.html')
+
+@app.route('/initialize', methods=['POST'])
+def init_controls():
+    hw_data = hw.initialize()
+    with open('hw_list.txt', 'r', encoding='utf-8') as f:
+        hw_list = f.readlines()
+    hw_init = []
+    for i in range(len(hw_list)):
+        try:
+            hw_init.append((hw_list[i].strip(), hw_data[i]))
+        except IndexError:
+            hw_init.append((hw_list[i].strip(), None))
+    return flask.jsonify(hw_init)
+
+@app.route('/ask', methods=['POST'])
+def ask_hardware():
+    command_code = int(flask.request.args.get('code'))
+    raw_message = str(flask.request.args.get('message'))
+    message = raw_message.split(',') if raw_message.lower() != 'nan' and raw_message.lower() !='' else None
+    message = list(map(float, message)) if message is not None else None
+    return flask.jsonify(hw.ask(command_code, message))
+
 if __name__ == "__main__":
-    scheme = self_check.load_scheme()
-    check_result = self_check.check(scheme)
+    hw.assign_port()
     # TODO Сюда запихать загрузку списка объектов из JSON'а
-    send_message("Bot", "Результаты самодиагностики: " + str(check_result))
     app.run(host='0.0.0.0', port=8008, debug=True)

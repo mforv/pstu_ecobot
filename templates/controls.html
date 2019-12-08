@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Bot Controls</title>
+
+    <link href="/static/css/controls.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container">
+        <div class="control-block">
+            <h2>Панель прямого управления</h2>
+            <button onclick="initSystem()">Инициализировать систему</button>
+            <div class="params-block hidden" id="params">
+                <div style="display: flex; align-items: center;">
+                    <h3>Показатели системы при инициализации</h3>
+                    <div style="border-bottom: 1px dashed #cecfdb; cursor: pointer; margin-left: auto;" onclick="hideElement(this, 'params-grid')">свернуть</div>
+                </div>
+                <div class="params-grid" id="params-grid"></div>
+            </div>
+        </div>
+        <div class="control-block hidden" id="power">
+            <h2>Управление питанием</h2>
+            <button onclick="sendCommand(0x02)">Отключение питания</button>
+            <button onclick="sendCommand(0x01)">Аварийное отключение питания</button>
+        </div>
+        <div class="control-block hidden" id="steering">
+            <h2>Управление рулем</h2>
+            <button onclick="sendCommand(0x03)">Инициализация</button>
+            <div class="command-inputs">
+                <div>
+                    <label for="steering-angle">Угол</label>
+                    <input id='steering-angle' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button onclick="sendCommand(0x04, [document.getElementById('steering-angle').value])">Поворот на заданный угол</button>
+                </div>
+            </div>
+        </div>
+        <div class="control-block hidden" id="movement">
+            <h2>Управление движением</h2>
+            <div class="command-inputs">
+                <div>
+                    <label for="speed">Скорость</label>
+                    <input id='speed' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x05, [document.getElementById('speed').value])">Установить скорость</button>
+                </div>
+            </div>
+            <div class="command-inputs">
+                <div>
+                    <label for="radius">Радиус</label>
+                    <input id='radius' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="radius">Расстояние</label>
+                    <input id='radius-distance' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x06, [document.getElementById('radius').value, document.getElementById('radius-distance').value])">
+                        Двигаться с радиусом на расстояние
+                    </button>
+                </div>
+            </div>
+            <div class="command-inputs">
+                <div>
+                    <label for="obstacle-distance">Расстояние</label>
+                    <input id='obstacle-distance' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x07, [document.getElementById('obstacle-distance').value])">
+                        Подъехать к препятствию на расстояние
+                    </button>
+                </div>
+            </div>
+            <div class="command-inputs">
+                <div>
+                    <label for="move-x">Координата X</label>
+                    <input id='move-x' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="move-y">Координата Y</label>
+                    <input id='move-y' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x08, [document.getElementById('move-x').value, document.getElementById('move-y').value])">Следовать в точку</button>
+                </div>
+            </div>
+        </div>
+        <div class="control-block hidden" id="camera">
+            <h2>Управление подвесом камеры</h2>
+            <div class="command-inputs">
+                <div>
+                    <label for="cam-course">Курс</label>
+                    <input id='cam-course' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="cam-tangage">Тангаж</label>
+                    <input id='cam-tangage' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x09, [document.getElementById('cam-course').value, document.getElementById('cam-tangage').value])">Установить положение подвеса</button>
+                </div>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x0A)">Найти самый близкий объект</button>
+                <button onclick="sendCommand(0x0B)">Найти самый дальний объект</button>
+            </div>
+        </div>
+        <div class="control-block hidden" id="lights">
+            <h2>Управление светом</h2>
+            <div>
+                <button onclick="sendCommand(0x0C, [1.0])">Включить подсветку</button>
+                <button onclick="sendCommand(0x0C, [0.0])">Выключить подсветку</button>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x0D, [1.0])">Включить фары</button>
+                <button onclick="sendCommand(0x0D, [0.0])">Выключить фары</button>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x0E, [1.0])">Включить габариты</button>
+                <button onclick="sendCommand(0x0E, [0.0])">Выключить габариты</button>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x0F, [-1.0])">Включить левый поворот</button>
+                <button onclick="sendCommand(0x0F, [1.0])">Включить правый поворот</button>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x0F, [0.0])">Выключить поворотники</button>
+                <button onclick="sendCommand(0x0F, [2.0])">Аварийная сигнализация</button>
+            </div>
+        </div>
+        <div class="control-block hidden" id="grab">
+            <h2>Управление захватом</h2>
+            <div>
+                <button onclick="sendCommand(0x10)">Инициализация</button>
+            </div>
+            <div class="command-inputs">
+                <div>
+                    <label for="grab-x">Координата X</label>
+                    <input id='grab-x' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="grab-y">Координата Y</label>
+                    <input id='grab-y' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="grab-z">Координата Z</label>
+                    <input id='grab-z' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x11, [document.getElementById('grab-x').value, document.getElementById('grab-y').value, document.getElementById('grab-z').value])">Взять предмет</button>
+                </div>
+            </div>
+            <div class="command-inputs">
+                <div>
+                    <label for="grab-move-x">Координата X</label>
+                    <input id='grab-move-x' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="grab-move-y">Координата Y</label>
+                    <input id='grab-move-y' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <label for="grab-move-z">Координата Z</label>
+                    <input id='grab-move-z' value="0.0" placeholder="0.0">
+                </div>
+                <div>
+                    <button style="width: 100%;" onclick="sendCommand(0x12, [document.getElementById('grab-move-x').value, document.getElementById('grab-move-y').value, document.getElementById('grab-move-z').value])">Переместить манипулятор</button>
+                </div>
+            </div>
+            <div style="margin-top: 0.5em;">
+                <button onclick="sendCommand(0x13)">Отпустить объект</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hideElement(caller, element)
+        {
+            document.getElementById(element).classList.toggle('hidden');
+            caller.innerText = caller.innerText == 'свернуть' ? 'развернуть' : 'свернуть';
+        }
+
+        async function sendCommand(commandCode=0x00, message=NaN)
+        {
+            fetch('/ask?code='+commandCode+'&message='+message+'', {method: 'POST', cache: 'no-cache'}).then(response => response.json()).then(data => {alert('Код ответа: '+data);})
+        }
+
+        async function initSystem()
+        {
+            const paramsBlock = document.getElementById('params');
+            paramsBlock.classList.remove('hidden');
+            const paramsGrid = document.getElementById('params-grid');
+            while (paramsGrid.firstChild) { paramsGrid.removeChild(paramsGrid.firstChild); }
+            const response = await fetch('/initialize', { method: 'POST', cache: 'no-cache'});
+            const hwData = await response.json();
+            hwData.forEach(element => {
+                paramName = document.createElement('span');
+                paramName.innerText = element[0];
+                paramValue = document.createElement('span');
+                paramValue.style.textAlign = 'right';
+                paramValue.innerText = Number(element[1]).toFixed(2);
+                paramsGrid.appendChild(paramName);
+                paramsGrid.appendChild(paramValue);
+            });
+            document.getElementById('power').classList.remove('hidden');
+            document.getElementById('steering').classList.remove('hidden');
+            document.getElementById('movement').classList.remove('hidden');
+            document.getElementById('camera').classList.remove('hidden');
+            document.getElementById('lights').classList.remove('hidden');
+            document.getElementById('grab').classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>

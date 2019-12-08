@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,400i');
+
+body { 
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: #cecfdb;
+}
+
+.container {
+    display: grid;
+    max-width: 960px;
+    margin: 0 auto;
+    font-size: 18px;
+}
+
+.control-block {
+    background-color: #ffffff;
+    padding: 1em;
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+}
+
+h2 {
+    font-weight: 400;
+    font-size: 1.75em;
+    margin: 0 0 0.75em;
+}
+
+h3 {
+    font-weight: 400;
+    font-size: 1.25em;
+    margin: 0.75em 0;
+}
+
+button {
+    border: 3px solid #1a237e;
+    background-color: transparent;
+    border-radius: 0.25em;
+    padding: 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+button:hover {
+    border-color: #c51162;
+}
+button:active {
+    background-color: #1a237e;
+    color: #ffffff;
+}
+
+input {
+    border: 3px solid #7986cb;
+    background-color: #ffffff;
+    border-radius: 0.25em;
+    padding: 0.5em;
+    font-size: 1em;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.25em;
+    color: #90919b;
+}
+
+.params-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5em 0em;
+    margin: 0.5em 0;
+}
+
+.command-inputs {
+    display: flex; 
+    align-items:flex-end; 
+    margin-top: 0.5em; 
+    gap: 0.25em;
+    flex-wrap: wrap;
+}
+
+span {
+    padding-top: 0.25em;
+    border-top: 1px solid #cecfdb;
+}
+
+.hidden {
+    display: none;
+}
